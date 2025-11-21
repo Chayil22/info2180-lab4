@@ -63,10 +63,44 @@ $superheroes = [
   ], 
 ];
 
-?>
+header('Content-Type: text/html; charset=UTF-8');
 
-<ul>
-<?php foreach ($superheroes as $superhero): ?>
-  <li><?= $superhero['alias']; ?></li>
-<?php endforeach; ?>
-</ul>
+// Read ?query=something
+$query = filter_input(INPUT_GET, 'query', FILTER_SANITIZE_STRING);
+
+// If the query exists and is not empty
+if ($query && trim($query) !== '') {
+    $query = strtolower(trim($query));
+    $found = null;
+
+    // Search for a match
+    foreach ($superheroes as $hero) {
+        $name  = strtolower($hero['name']);
+        $alias = strtolower($hero['alias']);
+
+        if ($name === $query || $alias === $query) {
+            $found = $hero;
+            break;
+        }
+    }
+
+    // If match found, show hero details
+    if ($found) {
+        echo '<h3>' . htmlentities($found['alias']) . '</h3>';
+        echo '<h4>A.K.A ' . htmlentities($found['name']) . '</h4>';
+        echo '<p>'  . htmlentities($found['biography']) . '</p>';
+    } 
+    // If no match
+    else {
+        echo '<p class="error">Superhero not found</p>';
+    }
+}
+
+// If no query provided then show full list
+else {
+    echo '<ul>';
+    foreach ($superheroes as $hero) {
+        echo '<li>' . htmlentities($hero['alias']) . '</li>';
+    }
+    echo '</ul>';
+}

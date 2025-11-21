@@ -1,14 +1,26 @@
-window.onload = function() {
-    const button = document.getElementById("search-btn");
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("lookup-form");
+  const input = document.getElementById("search");
+  const resultDiv = document.getElementById("result");
 
-    button.addEventListener("click", function() {
-        fetch("superheroes.php")
-            .then(response => response.text())
-            .then(data => {
-                alert(data); // show whole list in an alert
-            })
-            .catch(error => {
-                console.error("Error:", error);
-            });
-    });
-};
+  form.addEventListener("submit", (event) => {
+    event.preventDefault(); // stop page reload
+
+    const query = input.value.trim();
+    let url = "superheroes.php";
+
+    if (query !== "") {
+      url += "?query=" + encodeURIComponent(query);
+    }
+
+    fetch(url)
+      .then((response) => response.text())
+      .then((data) => {
+        resultDiv.innerHTML = data; 
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        resultDiv.innerHTML = "<p>There was a problem with the request.</p>";
+      });
+  });
+});
